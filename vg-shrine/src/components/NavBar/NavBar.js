@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+
+import { get_user } from '../../ducks/reducer';
 
 class NavBar extends Component {
     constructor() {
@@ -7,6 +11,14 @@ class NavBar extends Component {
         this.state = {
             posts: []
         }
+    }
+
+    componentDidMount() {
+        axios.get('/api/user').then( res => {
+            console.log('Get user deets: ', res.data)
+            this.props.get_user(res.data);
+
+        }).catch(err => console.log('Get user error: ', err))
     }
 
     render() {
@@ -20,4 +32,8 @@ class NavBar extends Component {
     }
 }
 
-export default NavBar;
+function mapStateToProps(state) {
+    return state;
+}
+
+export default connect(mapStateToProps, { get_user })(NavBar);
