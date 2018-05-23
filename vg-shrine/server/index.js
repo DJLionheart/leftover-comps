@@ -45,7 +45,7 @@ passport.use(new Auth0Strategy({
     clientID: CLIENT_ID,
     clientSecret: CLIENT_SECRET,
     callbackURL: CALLBACK_URL,
-    scope: 'openid profile'
+    scope: 'openid profile email'
 }, 
 function(accessToken, refreshToken, extraParams, profile, done) {
 
@@ -89,7 +89,7 @@ app.get(CALLBACK_URL, passport.authenticate('auth0', {
 
 app.get('/api/user', (req, res, next) => {
 
-    console.log('Get user endpoint hit: ', req)
+    console.log('Get user endpoint hit: ', req.user)
 
     if(req.user) {
         console.log('User: ', req.user);
@@ -111,6 +111,60 @@ app.get(CALLBACK_URL, (req, res, next) => {
     }).catch(err => console.log('Error retrieving user! ', err));
 })    
 
+
+function authCheck(req, res, next) {
+    if(req.user){
+        console.log('Authorized user')
+        next()
+    } else {
+        console.log('Unauthorized user...')
+        res.status(401).send('You must be logged int!')
+    }
+}
+
+app.get('/api/posts', authCheck, (req, res, next) => {
+    const db = app.get('db');
+
+    db.get_posts().then( posts => {
+        res.status(200).send(posts)
+    }).catch(err => console.log('Error fetching posts: ', err))
+})
+
+app.get('/api/posts/users/:userid', (req, res, next) => {
+    const db = app.get('db')
+        , { userid } = req.params
+        , id = +userid;
+    
+    db.get_user_posts([id]).then( count => {
+        console.log('User posts retrieved: ', count[0])
+        res.status(200).send(count[0])
+    }).catch(err => console.log('Error fetching user posts: ', err))
+})
+
+app.get('/api/posts/:postid', authCheck, (req, res, next) => {
+    const db = app.get('db')
+        , { postid } = req.params
+        , id = +postid;
+        console.log('Retrieving post')
+
+    db.get_post([id]).then( post => {
+        console.log(`Retrieving post ${id}`)
+        res.status(200).send(post[0])
+    }).catch(err => console.log('Error fetching posts: ', err))
+})
+
+app.post('/api/contact/:userid', (req, res, next) => {
+    const db = app.get('db')
+        , { userid } = req.params
+        , { email } = req.body
+        , id = +userid;
+
+    db.add_email([id, email]).then(response => {
+        console.log('Email added to database: ', response[0])
+        res.status(200).send(response[0])
+    }).catch(err => console.log("error adding email: ", err))
+})
+
 app.post('/api/posts/compose/:id', (req, res, next) => {
     const db = app.get('db');
     const { id } = req.params
@@ -129,6 +183,12 @@ app.put('/api/posts/update/:postid', (req, res, next) => {
     db.update_post([postid, title, img, body]).then( results => {
         res.status(200).send(`Post ${postid} successfully updated!`)
     }).catch(err => console.log('Error updating post on DB: ', err))
+})
+
+app.get('/api/auth/logout', (req, res) => {
+    console.log('Logging current user out')
+    req.logout();
+    res.redirect('/')
 })
     
     

@@ -1,20 +1,37 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import axios from 'axios';
 
 import { post_message, update_post, get_messages } from '../../ducks/reducer';
 
 
-class Post extends Component {
-    constructor() {
-        super();
+class EditPost extends Component {
+    constructor(props) {
+        super(props);
         this.state = {
             title: '',
             author: '',
             img: '',
-            body: ''
+            body: '',
+            postid: 0
         }
-        this.createPost = this.createPost.bind(this);
+
+        this.updatePost = this.updatePost.bind(this);
+    }
+
+    componentDidMount() {
+        axios.get(`/api/posts/${this.props.postToEdit}`).then( res => {
+            const { title, img, body, postid } = res.data;
+            this.setState({
+                title: title,
+                img: img,
+                body: body,
+                postid: postid
+
+            })
+        })
+                
     }
 
     handleInput(evt) {
@@ -23,20 +40,24 @@ class Post extends Component {
         })
     }
 
-    createPost() {
-        const { title, img, body } = this.state;
-        this.props.post_message({
+    updatePost() {
+        const { title, img, body, postid } = this.state;
+        this.props.update_post({
             title: title,
             img: img,
-            body: body
+            body: body,
+            postid: postid
         })
         this.setState({
             title: '',
             img: '',
-            body: ''
+            body: '',
+            postid: 0
         })
-        this.props.history.push('/posts')
-
+        setTimeout( () => {
+            this.props.get_messages();
+            this.props.history.push('/posts')
+        }, 1000)
     }
 
     render() {
@@ -55,7 +76,9 @@ class Post extends Component {
                 <br/>
                 <h2>Message</h2>
                 <input name="body" value={ body } onChange={ e => this.handleInput(e) }/>
-                <button onClick={ this.createPost }>Submit</button>
+                <button onClick={ this.updatePost }>Update</button>
+                <hr/>
+                <h2>Post ID: {this.state.postid}</h2>
             </div>
         )
     }
@@ -65,4 +88,4 @@ function mapStateToProps(state) {
     return state
 }
 
-export default withRouter(connect(mapStateToProps, { post_message, update_post, get_messages })(Post));
+export default withRouter(connect(mapStateToProps, { update_post, get_messages })(EditPost));

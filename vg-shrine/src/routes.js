@@ -6,6 +6,7 @@ import Loader from './components/Loader/Loader';
 import Profile from './components/Profile/Profile';
 import PostList from './components/PostList/PostList';
 import Post from './components/Post/Post';
+import EditPost from './components/Post/EditPost';
 
 
 export default(
@@ -15,5 +16,6 @@ export default(
         <Route path="/profile" component={ Profile }/>
         <Route path="/posts" component={ PostList }/>
         <Route path="/compose" component={ Post }/>
+        <Route path="/edit_post" component={ EditPost }/>
     </Switch>
 )

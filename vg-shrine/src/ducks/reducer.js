@@ -3,9 +3,11 @@ import axios from 'axios';
 const initialState = {
     userRetrieved: false,
     user: {},
-    posts: [],
+    posts: [{postid: 1, title: 'Test', img: 'https://media.giphy.com/media/pa37AAGzKXoek/giphy.gif', body: 'this is a test'}],
     user_posts: 0,
-    post_updated: false
+    post_updated: false,
+    postToEdit: 0
+    
 }
 
 const {
@@ -15,8 +17,10 @@ const {
 const FULFILLED = '_FULFILLED'
     , GET_USER = 'GET_USER'
     , POST_MESSAGE = 'POST_MESSAGE'
+    , EDIT_POST = 'EDIT_POST'
     , PUT_MESSAGE = 'PUT_MESSAGE'
-    , GET_MESSAGES = 'GET_MESSAGES';
+    , GET_MESSAGES = 'GET_MESSAGES'
+    , LOGOUT = 'LOGOUT';
 
 
     
@@ -25,6 +29,13 @@ export function get_user(user) {
     return {
         type: GET_USER,
         payload: user
+    }
+}
+
+export function log_out() {
+    return {
+        type: LOGOUT,
+        payload: {}
     }
 }
 
@@ -41,6 +52,13 @@ export function post_message(message) {
     return {
         type: POST_MESSAGE,
         payload: post
+    }
+}
+
+export function edit_post(id) {
+    return {
+        type: EDIT_POST,
+        payload: id
     }
 }
 
@@ -78,12 +96,18 @@ export default function reducer(state = initialState, action) {
         case GET_USER:
             return Object.assign({}, state, { user: action.payload });
 
+        case LOGOUT:
+            return Object.assign({}, state, action.payload);
+
         case GET_MESSAGES + FULFILLED:
             return Object.assign({}, state, {posts: action.payload});
 
         case POST_MESSAGE + FULFILLED:
             let newCount = state.user_posts + 1;
             return Object.assign({}, state, { user_posts: newCount});
+
+        case EDIT_POST:
+            return Object.assign({}, state, {postToEdit: action.payload});
 
         case PUT_MESSAGE + FULFILLED:
             if(action.payload) {

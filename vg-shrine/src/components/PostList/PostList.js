@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { get_messages } from '../../ducks/reducer';
+import { get_messages, edit_post } from '../../ducks/reducer';
 
 
 class PostList extends Component {
@@ -11,14 +11,26 @@ class PostList extends Component {
         this.state = {
             posts: []
         }
+        this.edit = this.edit.bind(this);
+    }
+
+    componentDidMount() {
+        this.props.get_messages()
+    }
+
+    edit(id) {
+        this.props.edit_post(id);
+        setTimeout( () => {
+            this.props.history.push('/edit_post')
+        }, 500)
     }
 
     render() {
-        const { get_messages, posts } = this.props
+        const { posts, edit_post } = this.props;
 
         const postList = posts.map( (post, i) => {
             return(
-                <div>
+                <div key={ i }>
                     <h3>{post.title}</h3>
                     <br/>
                     <img src={ post.img } alt="game picture"/>
@@ -27,7 +39,8 @@ class PostList extends Component {
                     <br/>
                     <h3>Post ID: {post.postid}</h3>
                     <br/>
-                    <button>Edit</button>
+                    <button onClick={ () => this.edit(post.postid)}>Edit</button>
+                    <button>Favorite</button>
                 </div>
             )
         })
@@ -38,7 +51,7 @@ class PostList extends Component {
 
                 <Link to="/compose"><button>New Post</button></Link>
                 <hr/>
-                <button onClick={ get_messages }>Get Posts</button>
+                { postList }
             </div>
         )
     }
@@ -48,4 +61,4 @@ function mapStateToProps(state) {
     return state;
 }
 
-export default connect(mapStateToProps, { get_messages })(PostList);
+export default connect(mapStateToProps, { get_messages, edit_post })(PostList);

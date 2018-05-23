@@ -5,6 +5,11 @@ CREATE TABLE IF NOT EXISTS users (
     profile_pic VARCHAR(150)
 );
 
+CREATE TABLE IF NOT EXISTS user_contact(
+    userid INT REFERENCES users(userid),
+    email_address VARCHAR(100) NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS posts (
     postid SERIAL PRIMARY KEY,
     userid INT REFERENCES users(userid),
