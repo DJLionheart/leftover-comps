@@ -36,6 +36,7 @@ class NavBar extends Component {
                 <h2>Welcome, { this.props.user.username }</h2>
                 <Link to="/profile"><button>Profile</button></Link>
                 <Link to="/posts"><button>Post List</button></Link>
+                <Link to="/clubs"><button>Clubs</button></Link>
                 <button onClick={ this.logout }>Logout</button>
             </div>
         )

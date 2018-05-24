@@ -23,3 +23,12 @@ CREATE TABLE IF NOT EXISTS fav_posts (
     postid INT REFERENCES posts(postid)
 );
 
+CREATE TABLE IF NOT EXISTS clubs (
+    clubid SERIAL PRIMARY KEY,
+    clubname TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS user_clubs (
+    userid INT REFERENCES users(userid)
+    clubid INT REFERENCES clubs(clubid)
+);

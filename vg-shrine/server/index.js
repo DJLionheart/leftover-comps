@@ -175,6 +175,26 @@ app.post('/api/posts/compose/:id', (req, res, next) => {
     }).catch(err => console.log('Error creating post on DB: ', err))
 })
 
+app.post('/api/clubs/:userid', (req, res, next) => {
+    const { userid } = req.params
+        , { clubid } = req.body
+        , db = app.get('db')
+        , id = +userid
+        , cid = +clubid;
+
+    db.get_clubs([id]).then( clubs => {
+        clubs.forEach( club => {
+            if(club.clubid === clubid) {
+                res.status(403).send(false)
+            }
+        })
+        if(clubs.length === 0) {
+            db.subscribe_club([id, cid])
+        }
+    })
+
+})
+
 app.put('/api/posts/update/:postid', (req, res, next) => {
     const db = app.get('db');
     const { postid } = req.params
