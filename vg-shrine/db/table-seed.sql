@@ -2,7 +2,8 @@ CREATE TABLE IF NOT EXISTS users (
     userid SERIAL PRIMARY KEY,
     authid TEXT NOT NULL,
     username VARCHAR(60) NOT NULL,
-    profile_pic VARCHAR(150)
+    profile_pic VARCHAR(150),
+    pass VARCHAR(20)
 );
 
 CREATE TABLE IF NOT EXISTS user_contact(

@@ -79,13 +79,36 @@ passport.deserializeUser( (authid, done) => {
 })
 
 
-
+// Passport / Auth0 Login
 app.get(AUTH, passport.authenticate('auth0'), )
 
 app.get(CALLBACK_URL, passport.authenticate('auth0', {
     successRedirect: SUCCESS,
     failureRedirect: FAILURE
 }))
+
+app.post('/api/log_in', (req, res, next) => {
+    const db = app.get('db')
+        , { username, pass } = req.body;
+
+    db.get_login([username, pass]).then( user => {
+        if(user.length) {
+            req.session.user = user[0];
+            req.session.authenticated = true;
+            res.status(200).send(req.session.user)
+        } else {
+            res.status(200).send('Invalid credentials')
+        }
+    })
+})
+
+app.get('/api/auth/me', (req, res, next) => {
+    if(req.session.authenticated) {
+        res.status(200).send(req.session.user);
+    } else {
+        res.status(403).send('Please log in')
+    }
+})
 
 app.get('/api/user', (req, res, next) => {
 
@@ -182,16 +205,17 @@ app.post('/api/clubs/:userid', (req, res, next) => {
         , id = +userid
         , cid = +clubid;
 
-    db.get_clubs([id]).then( clubs => {
-        clubs.forEach( club => {
-            if(club.clubid === clubid) {
-                res.status(403).send(false)
-            }
-        })
-        if(clubs.length === 0) {
-            db.subscribe_club([id, cid])
+    db.get_clubs([id, cid]).then( clubs => {
+        if(clubs.length > 0) {
+            console.log('User already in that club')
+            res.status(200).send(false)
+        } else {
+            db.subscribe_club([id, cid]).then( () => {
+                res.status(200).send(true)
+            }).catch(err, console.log('error subscribing: ', err))
         }
-    })
+    
+    }).catch(err => console.log('Error getting clubs', err));
 
 })
 
@@ -208,6 +232,7 @@ app.put('/api/posts/update/:postid', (req, res, next) => {
 app.get('/api/auth/logout', (req, res) => {
     console.log('Logging current user out')
     req.logout();
+    req.session.destroy()
     res.redirect('/')
 })
     

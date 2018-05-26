@@ -6,7 +6,9 @@ const initialState = {
     posts: [{postid: 1, title: 'Test', img: 'https://media.giphy.com/media/pa37AAGzKXoek/giphy.gif', body: 'this is a test'}],
     user_posts: 0,
     post_updated: false,
-    postToEdit: 0
+    postToEdit: 0,
+    customLogin: 'User'
+
     
 }
 

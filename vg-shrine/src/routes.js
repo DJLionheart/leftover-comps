@@ -4,6 +4,7 @@ import { Switch, Route } from 'react-router-dom';
 import Auth from './components/Auth/Auth';
 import Loader from './components/Loader/Loader';
 import Profile from './components/Profile/Profile';
+import AltProf from './components/Profile/AltProf';
 import PostList from './components/PostList/PostList';
 import Post from './components/Post/Post';
 import Clubs from './components/Clubs/Clubs';
@@ -15,6 +16,7 @@ export default(
         <Route exact path="/" component={ Auth }/>
         <Route path="/loader" component={ Loader }/>
         <Route path="/profile" component={ Profile }/>
+        <Route path="/altprof" component={ AltProf }/>
         <Route path="/posts" component={ PostList }/>
         <Route path="/compose" component={ Post }/>
         <Route path="/edit_post" component={ EditPost }/>

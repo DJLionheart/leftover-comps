@@ -1,3 +1,3 @@
 SELECT * FROM user_clubs uc
 JOIN clubs c ON uc.clubid = c.clubid
-WHERE uc.clubid IN (SELECT clubid FROM user_clubs WHERE userid = $1)
+WHERE uc.userid = $1 AND c.clubid = $2;
